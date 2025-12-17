@@ -1,0 +1,253 @@
+{
+	"info": {
+		"_postman_id": "publicpolls-api-collection",
+		"name": "PublicPolls API",
+		"description": "Collection da API do Sistema de Questionários Online - Pesquisas públicas para eleições.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Registrar Usuário",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"senha123\",\n    \"name\": \"Administrador\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"senha123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Surveys",
+			"item": [
+				{
+					"name": "Listar Minhas Pesquisas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/surveys",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "surveys"]
+						}
+					}
+				},
+				{
+					"name": "Criar Pesquisa",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Pesquisa Eleitoral 2024\",\n    \"description\": \"Pesquisa de intenção de voto para as eleições municipais\",\n    \"startDate\": \"2024-01-01T00:00:00Z\",\n    \"endDate\": \"2024-12-31T23:59:59Z\",\n    \"questions\": [\n        {\n            \"text\": \"Em quem você pretende votar para prefeito?\",\n            \"order\": 1,\n            \"isRequired\": true,\n            \"options\": [\n                { \"text\": \"Candidato A\", \"order\": 1 },\n                { \"text\": \"Candidato B\", \"order\": 2 },\n                { \"text\": \"Candidato C\", \"order\": 3 },\n                { \"text\": \"Nulo/Branco\", \"order\": 4 },\n                { \"text\": \"Indeciso\", \"order\": 5 }\n            ]\n        },\n        {\n            \"text\": \"Qual sua faixa etária?\",\n            \"order\": 2,\n            \"isRequired\": true,\n            \"options\": [\n                { \"text\": \"18-25 anos\", \"order\": 1 },\n                { \"text\": \"26-35 anos\", \"order\": 2 },\n                { \"text\": \"36-50 anos\", \"order\": 3 },\n                { \"text\": \"51+ anos\", \"order\": 4 }\n            ]\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/surveys",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "surveys"]
+						}
+					}
+				},
+				{
+					"name": "Obter Pesquisa por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/surveys/{{surveyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "surveys", "{{surveyId}}"]
+						}
+					}
+				},
+				{
+					"name": "Obter Pesquisa Pública",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/surveys/{{publicUrl}}/public",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "surveys", "{{publicUrl}}", "public"]
+						}
+					}
+				},
+				{
+					"name": "Atualizar Pesquisa",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Pesquisa Eleitoral 2024 - Atualizada\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/surveys/{{surveyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "surveys", "{{surveyId}}"]
+						}
+					}
+				},
+				{
+					"name": "Excluir Pesquisa",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/surveys/{{surveyId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "surveys", "{{surveyId}}"]
+						}
+					}
+				},
+				{
+					"name": "Submeter Resposta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"answers\": [\n        {\n            \"questionId\": \"{{questionId1}}\",\n            \"optionId\": \"{{optionId1}}\"\n        },\n        {\n            \"questionId\": \"{{questionId2}}\",\n            \"optionId\": \"{{optionId2}}\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/surveys/{{surveyId}}/responses",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "surveys", "{{surveyId}}", "responses"]
+						}
+					}
+				},
+				{
+					"name": "Obter Resultados",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/surveys/{{surveyId}}/results",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "surveys", "{{surveyId}}", "results"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
