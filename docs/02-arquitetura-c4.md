@@ -13,10 +13,16 @@ graph TD
 
     L1 --> L2 --> L3 --> L4
 
-    style L1 fill:#e3f2fd
-    style L2 fill:#f3e5f5
-    style L3 fill:#e8f5e9
-    style L4 fill:#fff3e0
+    %% Styling
+    classDef l1 fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef l2 fill:#f3e5f5,stroke:#7b1fa2,color:#000,stroke-width:2px;
+    classDef l3 fill:#e8f5e9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef l4 fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+
+    class L1 l1;
+    class L2 l2;
+    class L3 l3;
+    class L4 l4;
 ```
 
 ---
@@ -49,7 +55,7 @@ graph TB
     %% Styling
     classDef users fill:#e8f5e9,stroke:#1b5e20,color:#000,stroke-width:2px;
     classDef system fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
-    classDef ext fill:#f5f5f5,stroke:#616161,color:#000,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef ext fill:#ffffff,stroke:#000000,color:#000,stroke-width:2px,stroke-dasharray: 5 5;
 
     class R,A users;
     class PP system;

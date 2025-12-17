@@ -191,9 +191,10 @@ graph TB
     SM -.->|Divulga| R
     Sistema -.->|Notifica| E
 
+    %% Styling
     classDef users fill:#e8f5e9,stroke:#1b5e20,color:#000,stroke-width:2px;
     classDef system fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
-    classDef ext fill:#f5f5f5,stroke:#616161,color:#000,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef ext fill:#ffffff,stroke:#000000,color:#000,stroke-width:2px,stroke-dasharray: 5 5;
 
     class R,A,D,S users;
     class Sistema system;

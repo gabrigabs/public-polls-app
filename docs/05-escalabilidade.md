@@ -82,7 +82,7 @@ graph TB
     PRIMARY --> REPLICA2
 
     %% Styling
-    classDef lb fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef lb fill:#e0f7fa,stroke:#006064,color:#000,stroke-width:2px;
     classDef api fill:#bbdefb,stroke:#0d47a1,color:#000,stroke-width:2px;
     classDef redis fill:#ffcdd2,stroke:#c62828,color:#000,stroke-width:2px;
     classDef db fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
@@ -216,7 +216,7 @@ graph LR
     RL -->|"✅ Dentro do limite"| API
     RL -->|"❌ 429 Too Many Requests"| IP
 
-    classDef rl fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef rl fill:#e0f7fa,stroke:#006064,color:#000,stroke-width:2px;
     class RL rl;
 ```
 
@@ -270,7 +270,7 @@ graph LR
     Q -->|"Consome"| W
     W -->|"Persiste"| DB
 
-    classDef queue fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef queue fill:#e0f7fa,stroke:#006064,color:#000,stroke-width:2px;
     class Q queue;
 ```
 
