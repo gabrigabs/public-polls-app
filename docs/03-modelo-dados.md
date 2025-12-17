@@ -293,12 +293,20 @@ graph TD
     Q -.->|RESTRICT| A
     O -.->|RESTRICT| A
 
-    style U fill:#ffeb3b
-    style S fill:#4caf50,color:#fff
-    style Q fill:#2196f3,color:#fff
-    style O fill:#9c27b0,color:#fff
-    style R fill:#ff9800,color:#fff
-    style A fill:#f44336,color:#fff
+    %% Styling
+    classDef u fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef s fill:#bbdefb,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef q fill:#e1bee7,stroke:#6a1b9a,color:#000,stroke-width:2px;
+    classDef o fill:#fff9c4,stroke:#fbc02d,color:#000,stroke-width:2px;
+    classDef r fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef a fill:#ffcdd2,stroke:#c62828,color:#000,stroke-width:2px;
+
+    class U u;
+    class S s;
+    class Q q;
+    class O o;
+    class R r;
+    class A a;
 ```
 
 | FK | On Delete | Justificativa |
@@ -319,6 +327,7 @@ graph TD
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant A as API
     participant R as Redis
     participant D as PostgreSQL

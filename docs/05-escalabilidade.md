@@ -12,7 +12,8 @@ graph LR
         C --> D["📊 Pico de<br/>10K req/s"]
     end
 
-    style D fill:#f44336,color:#fff
+    classDef critical fill:#ffcdd2,stroke:#c62828,color:#000,stroke-width:2px;
+    class D critical;
 ```
 
 | Métrica | Valor Esperado | Crítico |
@@ -80,9 +81,16 @@ graph TB
     PRIMARY --> REPLICA1
     PRIMARY --> REPLICA2
 
-    style LB fill:#ff9800,color:#fff
-    style REDIS fill:#f44336,color:#fff
-    style PRIMARY fill:#4caf50,color:#fff
+    %% Styling
+    classDef lb fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef api fill:#bbdefb,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef redis fill:#ffcdd2,stroke:#c62828,color:#000,stroke-width:2px;
+    classDef db fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+
+    class LB lb;
+    class API1,API2,API3,APIN api;
+    class REDIS redis;
+    class PRIMARY,REPLICA1,REPLICA2 db;
 ```
 
 ---
@@ -93,6 +101,7 @@ graph TB
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant C as Cliente
     participant A as API
     participant R as Redis
@@ -191,7 +200,8 @@ graph LR
     RL -->|"✅ Dentro do limite"| API
     RL -->|"❌ 429 Too Many Requests"| IP
 
-    style RL fill:#ff9800,color:#fff
+    classDef rl fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    class RL rl;
 ```
 
 **Regras:**
@@ -240,7 +250,8 @@ graph LR
     Q -->|"Consome"| W
     W -->|"Persiste"| DB
 
-    style Q fill:#ff6f00,color:#fff
+    classDef queue fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    class Q queue;
 ```
 
 **Quando implementar:**

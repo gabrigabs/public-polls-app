@@ -14,6 +14,7 @@ A API utiliza **JWT Bearer Token** para autenticação.
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant C as Cliente
     participant A as API
 
@@ -406,6 +407,7 @@ Authorization: Bearer <token>
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant A as Admin
     participant API as API
 
@@ -425,6 +427,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant R as Respondente
     participant API as API
 

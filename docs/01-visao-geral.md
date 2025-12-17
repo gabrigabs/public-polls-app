@@ -27,7 +27,8 @@ graph LR
         E --> H[Resultados em Tempo Real]
     end
 
-    style E fill:#4caf50,color:#fff
+    classDef solution fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    class E,F,G,H solution;
 ```
 
 ---
@@ -147,6 +148,14 @@ graph TB
     S -->|Financia| Sistema
     SM -.->|Divulga| R
     Sistema -.->|Notifica| E
+
+    classDef users fill:#e8f5e9,stroke:#1b5e20,color:#000,stroke-width:2px;
+    classDef system fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef ext fill:#f5f5f5,stroke:#616161,color:#000,stroke-width:2px,stroke-dasharray: 5 5;
+
+    class R,A,D,S users;
+    class Sistema system;
+    class SM,E ext;
 ```
 
 ---
@@ -245,6 +254,12 @@ graph LR
     D4 --> Sistema
     D5 --> Sistema
     D6 --> Sistema
+
+    classDef system fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef dep fill:#fff9c4,stroke:#fbc02d,color:#000,stroke-width:2px;
+
+    class Sistema system;
+    class D1,D2,D3,D4,D5,D6 dep;
 ```
 
 ---

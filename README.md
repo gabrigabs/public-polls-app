@@ -121,86 +121,142 @@ graph TB
     API -->|Cache| RD
     SM -.->|Divulga Links| R
 
-    style R fill:#e1f5fe
-    style A fill:#fff3e0
-    style BW fill:#f3e5f5
-    style API fill:#e8f5e9
-    style PG fill:#fce4ec
-    style RD fill:#ffebee
+    %% Styling
+    classDef users fill:#e8f5e9,stroke:#1b5e20,color:#000,stroke-width:2px;
+    classDef front fill:#f3e5f5,stroke:#4a148c,color:#000,stroke-width:2px;
+    classDef back fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef data fill:#fff9c4,stroke:#fbc02d,color:#000,stroke-width:2px;
+    classDef ext fill:#f5f5f5,stroke:#616161,color:#000,stroke-width:2px,stroke-dasharray: 5 5;
+
+    class R,A users;
+    class BW front;
+    class API back;
+    class PG,RD data;
+    class SM ext;
 ```
 
 ### Diagrama C4 - Nível 1: Contexto
 
 ```mermaid
-C4Context
-    title Sistema de Questionários Online - Diagrama de Contexto
+graph TB
+    subgraph "👥 Usuários"
+        R[("🗳️ Respondente<br/>Cidadão")]
+        A[("👔 Administrador<br/>Gestor")]
+    end
 
-    Person(respondente, "Respondente", "Cidadão que responde às pesquisas via link compartilhado em redes sociais")
-    Person(admin, "Administrador", "Usuário que cria pesquisas, gerencia perguntas e visualiza resultados sumarizados")
-    
-    System(sistema, "PublicPolls", "Sistema que permite criação de pesquisas de múltipla escolha e coleta de respostas em larga escala")
-    
-    System_Ext(redes, "Redes Sociais", "Facebook, Instagram, Twitter, WhatsApp - Canais de divulgação dos links de pesquisa")
-    System_Ext(email, "Serviço de Email", "Para notificações e envio de relatórios")
+    subgraph "📍 Sistema PublicPolls"
+        PP["🏛️ PublicPolls<br/>Sistema de Questionários"]
+    end
 
-    Rel(respondente, sistema, "Responde pesquisas", "HTTPS")
-    Rel(admin, sistema, "Gerencia pesquisas e visualiza resultados", "HTTPS")
-    Rel(redes, respondente, "Divulga links das pesquisas", "Anúncios/Posts")
-    Rel(sistema, email, "Envia notificações", "SMTP")
+    subgraph "🌐 Externos"
+        SM["📱 Redes Sociais<br/>Divulgação"]
+        EM["📧 Serviço de Email<br/>Notificações"]
+    end
+
+    R -->|Responde via HTTPS| PP
+    A -->|Gerencia via HTTPS| PP
+    SM -.->|Divulga Links| R
+    PP -.->|Envia Email| EM
+
+    %% Styling
+    classDef users fill:#e8f5e9,stroke:#1b5e20,color:#000,stroke-width:2px;
+    classDef system fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef ext fill:#f5f5f5,stroke:#616161,color:#000,stroke-width:2px,stroke-dasharray: 5 5;
+
+    class R,A users;
+    class PP system;
+    class SM,EM ext;
 ```
 
 ### Diagrama C4 - Nível 2: Containers
 
 ```mermaid
-C4Container
-    title PublicPolls - Diagrama de Containers
+graph TB
+    subgraph "👥 Usuários"
+        R[("🗳️ Respondente")]
+        A[("👔 Administrador")]
+    end
 
-    Person(respondente, "Respondente", "Cidadão")
-    Person(admin, "Administrador", "Gestor")
+    subgraph "📦 PublicPolls System"
+        WEB["🖥️ Frontend Web<br/>Blazor WebAssembly"]
+        API["⚙️ API REST<br/>ASP.NET Core 8"]
+        
+        subgraph "💾 Dados"
+            CACHE[("⚡ Cache<br/>Redis 7")]
+            DB[("🐘 Banco de Dados<br/>PostgreSQL 15")]
+        end
+    end
 
-    Container_Boundary(sistema, "PublicPolls System") {
-        Container(web, "Frontend Web", "Blazor WebAssembly", "Interface SPA para responder pesquisas e dashboard administrativo com MudBlazor")
-        Container(api, "API REST", "ASP.NET Core 8", "Endpoints RESTful para autenticação, CRUD de pesquisas e submissão de respostas")
-        Container(cache, "Cache", "Redis 7", "Cache de pesquisas ativas, rate limiting e controle de sessões")
-        ContainerDb(db, "Banco de Dados", "PostgreSQL 15", "Armazenamento persistente de usuários, pesquisas, perguntas, opções e respostas")
-    }
+    R -->|HTTPS| WEB
+    A -->|HTTPS| WEB
+    WEB -->|HTTPS/JSON| API
+    API -->|Redis Protocol| CACHE
+    API -->|TCP/SQL| DB
 
-    Rel(respondente, web, "Acessa pesquisa", "HTTPS")
-    Rel(admin, web, "Gerencia sistema", "HTTPS")
-    Rel(web, api, "Requisições", "HTTPS/JSON")
-    Rel(api, cache, "Lê/Escreve", "Redis Protocol")
-    Rel(api, db, "CRUD", "TCP/SQL")
+    %% Styling
+    classDef users fill:#e8f5e9,stroke:#1b5e20,color:#000,stroke-width:2px;
+    classDef front fill:#f3e5f5,stroke:#4a148c,color:#000,stroke-width:2px;
+    classDef back fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef data fill:#fff9c4,stroke:#fbc02d,color:#000,stroke-width:2px;
+
+    class R,A users;
+    class WEB front;
+    class API back;
+    class CACHE,DB data;
 ```
 
 ### Diagrama C4 - Nível 3: Componentes da API
 
 ```mermaid
-C4Component
-    title API REST - Diagrama de Componentes
+graph TB
+    subgraph "⚙️ API REST - ASP.NET Core 8"
+        subgraph "🎯 Controllers"
+            AC["🔐 AuthController"]
+            SC["📋 SurveysController"]
+        end
 
-    Container_Boundary(api, "ASP.NET Core 8 API") {
-        Component(auth, "AuthController", "REST Controller", "POST /register, POST /login - Autenticação JWT")
-        Component(surveys, "SurveysController", "REST Controller", "CRUD de pesquisas, submissão de respostas, resultados")
-        
-        Component(authSvc, "AuthService", "Application Service", "Registro, login, geração de tokens JWT")
-        Component(surveySvc, "SurveyService", "Application Service", "Regras de negócio de pesquisas e perguntas")
-        Component(respSvc, "ResponseService", "Application Service", "Validação e processamento de respostas")
-        Component(resultSvc, "ResultsService", "Application Service", "Agregação e cálculo de resultados")
-        
-        Component(userRepo, "UserRepository", "Data Access", "Operações com entidade User via EF Core")
-        Component(surveyRepo, "SurveyRepository", "Data Access", "Operações com Survey, Question, Option")
-        Component(respRepo, "ResponseRepository", "Data Access", "Operações com Response e Answer")
-    }
+        subgraph "🧠 Services"
+            AS["🔑 AuthService"]
+            SS["📊 SurveyService"]
+            RS["📝 ResponseService"]
+            RES["📈 ResultsService"]
+        end
 
-    Rel(auth, authSvc, "Usa")
-    Rel(surveys, surveySvc, "Usa")
-    Rel(surveys, respSvc, "Usa")
-    Rel(surveys, resultSvc, "Usa")
+        subgraph "💾 Repositories"
+            UR["👤 UserRepository"]
+            SR["📋 SurveyRepository"]
+            RR["📝 ResponseRepository"]
+        end
+
+        subgraph "🏗️ Infrastructure"
+            CTX["🗄️ AppDbContext<br/>EF Core"]
+        end
+    end
+
+    AC --> AS
+    SC --> SS
+    SC --> RS
+    SC --> RES
     
-    Rel(authSvc, userRepo, "Persiste")
-    Rel(surveySvc, surveyRepo, "Persiste")
-    Rel(respSvc, respRepo, "Persiste")
-    Rel(resultSvc, respRepo, "Consulta")
+    AS --> UR
+    SS --> SR
+    RS --> RR
+    RES --> RR
+    
+    UR --> CTX
+    SR --> CTX
+    RR --> CTX
+
+    %% Styling
+    classDef ctrl fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef svc fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef repo fill:#bbdefb,stroke:#1565c0,color:#000,stroke-width:2px;
+    classDef infra fill:#e1bee7,stroke:#6a1b9a,color:#000,stroke-width:2px;
+
+    class AC,SC ctrl;
+    class AS,SS,RS,RES svc;
+    class UR,SR,RR repo;
+    class CTX infra;
 ```
 
 ---
@@ -299,6 +355,7 @@ dotnet run
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant C as Cliente
     participant A as API
     participant DB as PostgreSQL

@@ -27,28 +27,33 @@ graph TD
 
 ```mermaid
 graph TB
-    subgraph ext["🌐 Sistemas Externos"]
-        SM["📱 Redes Sociais<br/>(Facebook, Instagram, Twitter, WhatsApp)"]
-        EM["📧 Serviço de Email<br/>(SMTP para notificações)"]
+    subgraph "👥 Usuários"
+        R[("🗳️ Respondente<br/>Cidadão")]
+        A[("👔 Administrador<br/>Gestor")]
     end
 
-    subgraph users["👥 Usuários"]
-        R["🗳️ Respondente<br/>Cidadão que acessa<br/>link da pesquisa"]
-        A["👔 Administrador<br/>Gestor que cria<br/>e analisa pesquisas"]
+    subgraph "📍 Sistema PublicPolls"
+        PP["🏛️ PublicPolls<br/>Sistema de Questionários"]
     end
 
-    PP[("🏛️ PublicPolls<br/>Sistema de Questionários Online<br/><br/>Permite criar pesquisas de<br/>múltipla escolha e coletar<br/>respostas em larga escala")]
+    subgraph "🌐 Externos"
+        SM["📱 Redes Sociais<br/>Divulgação"]
+        EM["📧 Serviço de Email<br/>Notificações"]
+    end
 
-    R -->|"Responde pesquisas<br/>[HTTPS]"| PP
-    A -->|"Gerencia pesquisas<br/>Visualiza resultados<br/>[HTTPS]"| PP
-    SM -.->|"Divulga links<br/>[Anúncios/Posts]"| R
-    PP -.->|"Envia notificações<br/>[SMTP]"| EM
+    R -->|Responde via HTTPS| PP
+    A -->|Gerencia via HTTPS| PP
+    SM -.->|Divulga Links| R
+    PP -.->|Envia Email| EM
 
-    style PP fill:#1976d2,color:#fff,stroke:#1565c0
-    style R fill:#e3f2fd,stroke:#1976d2
-    style A fill:#fff3e0,stroke:#ff9800
-    style SM fill:#f5f5f5,stroke:#9e9e9e
-    style EM fill:#f5f5f5,stroke:#9e9e9e
+    %% Styling
+    classDef users fill:#e8f5e9,stroke:#1b5e20,color:#000,stroke-width:2px;
+    classDef system fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef ext fill:#f5f5f5,stroke:#616161,color:#000,stroke-width:2px,stroke-dasharray: 5 5;
+
+    class R,A users;
+    class PP system;
+    class SM,EM ext;
 ```
 
 ### 2.2 Descrição dos Elementos
@@ -69,37 +74,37 @@ graph TB
 
 ```mermaid
 graph TB
-    subgraph users["👥 Usuários"]
-        R["🗳️ Respondente"]
-        A["👔 Administrador"]
+    subgraph "👥 Usuários"
+        R[("🗳️ Respondente")]
+        A[("👔 Administrador")]
     end
 
-    subgraph boundary["🏛️ PublicPolls System"]
-        subgraph frontend["Frontend"]
-            WEB["🖥️ Frontend Web<br/><br/>[Blazor WebAssembly]<br/><br/>Interface SPA para<br/>responder pesquisas<br/>e dashboard admin"]
-        end
-
-        subgraph backend["Backend"]
-            API["⚙️ API REST<br/><br/>[ASP.NET Core 8]<br/><br/>Endpoints RESTful<br/>Autenticação JWT<br/>Swagger/OpenAPI"]
-        end
-
-        subgraph data["Camada de Dados"]
-            CACHE["⚡ Cache<br/><br/>[Redis 7]<br/><br/>Cache de pesquisas<br/>Rate Limiting<br/>Sessões"]
-
-            DB[("🐘 Banco de Dados<br/><br/>[PostgreSQL 15]<br/><br/>Usuários, Pesquisas<br/>Perguntas, Opções<br/>Respostas")]
+    subgraph "📦 PublicPolls System"
+        WEB["🖥️ Frontend Web<br/>Blazor WebAssembly"]
+        API["⚙️ API REST<br/>ASP.NET Core 8"]
+        
+        subgraph "💾 Dados"
+            CACHE[("⚡ Cache<br/>Redis 7")]
+            DB[("🐘 Banco de Dados<br/>PostgreSQL 15")]
         end
     end
 
-    R -->|"Responde pesquisa<br/>[HTTPS]"| WEB
-    A -->|"Gerencia sistema<br/>[HTTPS]"| WEB
-    WEB -->|"Chamadas API<br/>[HTTPS/JSON]"| API
-    API -->|"Lê/Escreve<br/>[Redis Protocol]"| CACHE
-    API -->|"CRUD<br/>[TCP/SQL]"| DB
+    R -->|HTTPS| WEB
+    A -->|HTTPS| WEB
+    WEB -->|HTTPS/JSON| API
+    API -->|Redis Protocol| CACHE
+    API -->|TCP/SQL| DB
 
-    style WEB fill:#7c4dff,color:#fff
-    style API fill:#4caf50,color:#fff
-    style CACHE fill:#f44336,color:#fff
-    style DB fill:#2196f3,color:#fff
+    %% Styling
+    classDef users fill:#e8f5e9,stroke:#1b5e20,color:#000,stroke-width:2px;
+    classDef front fill:#f3e5f5,stroke:#4a148c,color:#000,stroke-width:2px;
+    classDef back fill:#e3f2fd,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef data fill:#fff9c4,stroke:#fbc02d,color:#000,stroke-width:2px;
+
+    class R,A users;
+    class WEB front;
+    class API back;
+    class CACHE,DB data;
 ```
 
 ### 3.2 Descrição dos Containers
@@ -154,27 +159,27 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    subgraph api["⚙️ API REST - ASP.NET Core 8"]
-        subgraph controllers["Controllers (Entrada)"]
-            AC["🔐 AuthController<br/><br/>POST /register<br/>POST /login"]
-            SC["📋 SurveysController<br/><br/>GET /surveys<br/>POST /surveys<br/>GET /surveys/{id}<br/>PUT /surveys/{id}<br/>DELETE /surveys/{id}<br/>GET /surveys/{url}/public<br/>POST /surveys/{id}/responses<br/>GET /surveys/{id}/results"]
+    subgraph "⚙️ API REST - ASP.NET Core 8"
+        subgraph "🎯 Controllers"
+            AC["🔐 AuthController"]
+            SC["📋 SurveysController"]
         end
 
-        subgraph services["Services (Lógica de Negócio)"]
-            AS["🔑 AuthService<br/><br/>• Registro<br/>• Login<br/>• Geração JWT"]
-            SS["📊 SurveyService<br/><br/>• CRUD Pesquisas<br/>• Validações"]
-            RS["📝 ResponseService<br/><br/>• Submit respostas<br/>• Validação IP"]
-            RES["📈 ResultsService<br/><br/>• Agregação<br/>• Cálculo %"]
+        subgraph "🧠 Services"
+            AS["🔑 AuthService"]
+            SS["📊 SurveyService"]
+            RS["📝 ResponseService"]
+            RES["📈 ResultsService"]
         end
 
-        subgraph repos["Repositories (Acesso a Dados)"]
+        subgraph "💾 Repositories"
             UR["👤 UserRepository"]
             SR["📋 SurveyRepository"]
             RR["📝 ResponseRepository"]
         end
 
-        subgraph infra["Infrastructure"]
-            CTX["🗄️ AppDbContext<br/>[Entity Framework Core]"]
+        subgraph "🏗️ Infrastructure"
+            CTX["🗄️ AppDbContext<br/>EF Core"]
         end
     end
 
@@ -182,26 +187,26 @@ graph TB
     SC --> SS
     SC --> RS
     SC --> RES
-
+    
     AS --> UR
     SS --> SR
     RS --> RR
     RES --> RR
-
+    
     UR --> CTX
     SR --> CTX
     RR --> CTX
 
-    style AC fill:#ff9800,color:#fff
-    style SC fill:#ff9800,color:#fff
-    style AS fill:#4caf50,color:#fff
-    style SS fill:#4caf50,color:#fff
-    style RS fill:#4caf50,color:#fff
-    style RES fill:#4caf50,color:#fff
-    style UR fill:#2196f3,color:#fff
-    style SR fill:#2196f3,color:#fff
-    style RR fill:#2196f3,color:#fff
-    style CTX fill:#9c27b0,color:#fff
+    %% Styling
+    classDef ctrl fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef svc fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef repo fill:#bbdefb,stroke:#1565c0,color:#000,stroke-width:2px;
+    classDef infra fill:#e1bee7,stroke:#6a1b9a,color:#000,stroke-width:2px;
+
+    class AC,SC ctrl;
+    class AS,SS,RS,RES svc;
+    class UR,SR,RR repo;
+    class CTX infra;
 ```
 
 ### 4.2 Descrição dos Componentes
@@ -227,24 +232,24 @@ graph TB
 
 ```mermaid
 graph TB
-    subgraph web["🖥️ Frontend Web - Blazor WebAssembly"]
-        subgraph pages["Pages (Razor)"]
-            IP["🏠 Index.razor<br/>Landing Page"]
-            LP["🔐 Login.razor<br/>Autenticação"]
-            RP["📝 Register.razor<br/>Cadastro"]
-            SLP["📋 Surveys.razor<br/>Lista de Pesquisas"]
-            NSP["➕ NewSurvey.razor<br/>Criar Pesquisa"]
-            RSP["📊 Results.razor<br/>Resultados"]
-            PSP["🗳️ PublicSurvey.razor<br/>Responder Pesquisa"]
+    subgraph "🖥️ Frontend Web - Blazor WebAssembly"
+        subgraph "📄 Pages"
+            IP["🏠 Index.razor"]
+            LP["🔐 Login.razor"]
+            RP["📝 Register.razor"]
+            SLP["📋 Surveys.razor"]
+            NSP["➕ NewSurvey.razor"]
+            RSP["📊 Results.razor"]
+            PSP["🗳️ PublicSurvey.razor"]
         end
 
-        subgraph services["Services (HTTP)"]
-            ASVC["🔑 AuthService<br/>Login/Registro"]
-            SSVC["📊 SurveyService<br/>CRUD Pesquisas"]
+        subgraph "🔌 Services"
+            ASVC["🔑 AuthService"]
+            SSVC["📊 SurveyService"]
         end
 
-        subgraph shared["Shared"]
-            ML["📐 MainLayout.razor<br/>Layout Principal"]
+        subgraph "📐 Shared"
+            ML["📐 MainLayout.razor"]
         end
     end
 
@@ -263,13 +268,14 @@ graph TB
     RSP --> ML
     PSP --> ML
 
-    style IP fill:#7c4dff,color:#fff
-    style LP fill:#7c4dff,color:#fff
-    style RP fill:#7c4dff,color:#fff
-    style SLP fill:#7c4dff,color:#fff
-    style NSP fill:#7c4dff,color:#fff
-    style RSP fill:#7c4dff,color:#fff
-    style PSP fill:#7c4dff,color:#fff
+    %% Styling
+    classDef page fill:#e1bee7,stroke:#6a1b9a,color:#000,stroke-width:2px;
+    classDef svc fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef shared fill:#f5f5f5,stroke:#616161,color:#000,stroke-width:2px;
+
+    class IP,LP,RP,SLP,NSP,RSP,PSP page;
+    class ASVC,SSVC svc;
+    class ML shared;
 ```
 
 ---
@@ -278,19 +284,19 @@ graph TB
 
 ```mermaid
 graph TB
-    subgraph client["🖥️ Cliente"]
-        B["🌐 Browser<br/>Chrome, Firefox, Safari, Edge"]
+    subgraph "🖥️ Cliente"
+        B["🌐 Browser<br/>Chrome, Edge"]
     end
 
-    subgraph docker["🐳 Docker Compose"]
-        subgraph containers["Containers"]
-            C1["📦 publicpolls-api<br/>ASP.NET Core 8<br/>Porta: 5001"]
-            C2["📦 publicpolls-web<br/>Nginx + Blazor<br/>Porta: 5002"]
-            C3["📦 publicpolls-db<br/>PostgreSQL 15<br/>Porta: 5432"]
-            C4["📦 publicpolls-cache<br/>Redis 7<br/>Porta: 6379"]
+    subgraph "🐳 Docker Compose"
+        subgraph "📦 Containers"
+            C1["🔌 publicpolls-api<br/>:5001"]
+            C2["🖥️ publicpolls-web<br/>:5002"]
+            C3["🐘 publicpolls-db<br/>:5432"]
+            C4["⚡ publicpolls-cache<br/>:6379"]
         end
 
-        subgraph volumes["Volumes"]
+        subgraph "💾 Volumes"
             V1["💾 postgres_data"]
             V2["💾 redis_data"]
         end
@@ -300,13 +306,17 @@ graph TB
     C2 -->|HTTP:5001| C1
     C1 -->|TCP:5432| C3
     C1 -->|TCP:6379| C4
-    C3 --> V1
-    C4 --> V2
+    C3 -.-> V1
+    C4 -.-> V2
 
-    style C1 fill:#4caf50,color:#fff
-    style C2 fill:#7c4dff,color:#fff
-    style C3 fill:#2196f3,color:#fff
-    style C4 fill:#f44336,color:#fff
+    %% Styling
+    classDef client fill:#bbdefb,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef container fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef volume fill:#fff9c4,stroke:#fbc02d,color:#000,stroke-width:2px;
+
+    class B client;
+    class C1,C2,C3,C4 container;
+    class V1,V2 volume;
 ```
 
 ---

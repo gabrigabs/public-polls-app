@@ -22,7 +22,8 @@ graph LR
         D[Suporte LTS] --> R
     end
 
-    style R fill:#512bd4,color:#fff
+    classDef dotnet fill:#d1c4e9,stroke:#512bd4,color:#000,stroke-width:2px;
+    class R dotnet;
 ```
 
 #### 👨‍💻 Para Desenvolvedores
@@ -59,7 +60,8 @@ graph TB
         V[Vue] --> V1["❌ Time não conhece"]
     end
 
-    style B fill:#512bd4,color:#fff
+    classDef dotnet fill:#d1c4e9,stroke:#512bd4,color:#000,stroke-width:2px;
+    class B dotnet;
 ```
 
 #### 👨‍💻 Para Desenvolvedores
@@ -90,7 +92,8 @@ graph LR
         P --> E[Maturidade]
     end
 
-    style P fill:#336791,color:#fff
+    classDef pg fill:#bbdefb,stroke:#336791,color:#000,stroke-width:2px;
+    class P pg;
 ```
 
 #### 👨‍💻 Para Desenvolvedores
@@ -120,7 +123,8 @@ graph LR
         R --> P[Pub/Sub futuro]
     end
 
-    style R fill:#dc382d,color:#fff
+    classDef redis fill:#ffcdd2,stroke:#dc382d,color:#000,stroke-width:2px;
+    class R redis;
 ```
 
 #### 👨‍💻 Para Desenvolvedores
@@ -153,10 +157,16 @@ graph TB
 
     C --> S --> R --> D
 
-    style C fill:#ff9800,color:#fff
-    style S fill:#4caf50,color:#fff
-    style R fill:#2196f3,color:#fff
-    style D fill:#9c27b0,color:#fff
+    %% Styling
+    classDef ctrl fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef svc fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef repo fill:#bbdefb,stroke:#1565c0,color:#000,stroke-width:2px;
+    classDef domain fill:#e1bee7,stroke:#6a1b9a,color:#000,stroke-width:2px;
+
+    class C ctrl;
+    class S svc;
+    class R repo;
+    class D domain;
 ```
 
 #### 👨‍💻 Para Desenvolvedores
@@ -199,6 +209,7 @@ graph TB
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant C as Cliente
     participant A as API
 
