@@ -285,28 +285,57 @@ graph LR
 
 ### 5.1 Métricas Importantes
 
-```mermaid
-mindmap
-  root((Métricas))
-    Performance
-      Response Time P50
-      Response Time P95
-      Response Time P99
-      Throughput req/s
-    Disponibilidade
-      Uptime %
-      Error Rate %
-      Circuit Breaker status
-    Recursos
-      CPU %
-      Memory %
-      DB connections
-      Redis memory
-    Negócio
-      Respostas/hora
-      Pesquisas ativas
-      Usuários únicos
-```
+graph TB
+    root("📊 Métricas")
+
+    subgraph "🚀 Performance"
+        P1["Response Time P50"]
+        P2["Response Time P95"]
+        P3["Response Time P99"]
+        P4["Throughput req/s"]
+    end
+
+    subgraph "🆙 Disponibilidade"
+        D1["Uptime %"]
+        D2["Error Rate %"]
+        D3["Circuit Breaker status"]
+    end
+
+    subgraph "💾 Recursos"
+        R1["CPU %"]
+        R2["Memory %"]
+        R3["DB connections"]
+        R4["Redis memory"]
+    end
+
+    subgraph "💼 Negócio"
+        N1["Respostas/hora"]
+        N2["Pesquisas ativas"]
+        N3["Usuários únicos"]
+    end
+
+    root --> P1
+    root --> D1
+    root --> R1
+    root --> N1
+
+    P1 ~~~ P2 ~~~ P3 ~~~ P4
+    D1 ~~~ D2 ~~~ D3
+    R1 ~~~ R2 ~~~ R3 ~~~ R4
+    N1 ~~~ N2 ~~~ N3
+
+    %% Styling
+    classDef root fill:#212121,stroke:#000,color:#fff,stroke-width:2px;
+    classDef perf fill:#bbdefb,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef avail fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef res fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef biz fill:#e1bee7,stroke:#6a1b9a,color:#000,stroke-width:2px;
+
+    class root root;
+    class P1,P2,P3,P4 perf;
+    class D1,D2,D3 avail;
+    class R1,R2,R3,R4 res;
+    class N1,N2,N3 biz;
 
 ### 5.2 Stack Recomendada
 
