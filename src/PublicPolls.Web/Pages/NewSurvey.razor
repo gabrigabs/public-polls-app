@@ -1,0 +1,275 @@
+@page "/surveys/new"
+@inject ISurveyService SurveyService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Nova Pesquisa - PublicPolls</PageTitle>
+
+<div class="page-container">
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        <MudText Typo="Typo.h4" Class="mb-6">Criar Nova Pesquisa</MudText>
+        
+        <MudPaper Class="pa-6" Elevation="2">
+            <EditForm Model="@_model" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                
+                <MudText Typo="Typo.h6" Class="mb-4">Informações Básicas</MudText>
+                
+                <MudTextField @bind-Value="_model.Title" 
+                              Label="Título da Pesquisa" 
+                              Variant="Variant.Outlined"
+                              Required="true"
+                              Class="mb-4" />
+                
+                <MudTextField @bind-Value="_model.Description" 
+                              Label="Descrição (opcional)" 
+                              Variant="Variant.Outlined"
+                              Lines="3"
+                              Class="mb-4" />
+                
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="_model.StartDate" 
+                                       Label="Data de Início" 
+                                       Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="_model.EndDate" 
+                                       Label="Data de Término" 
+                                       Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudDivider Class="my-6" />
+                
+                <div style="display: flex; justify-content: space-between; align-items: center;" class="mb-4">
+                    <MudText Typo="Typo.h6">Perguntas</MudText>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="AddQuestion"
+                               StartIcon="@Icons.Material.Filled.Add">
+                        Adicionar Pergunta
+                    </MudButton>
+                </div>
+                
+                @for (int i = 0; i < _model.Questions.Count; i++)
+                {
+                    var index = i;
+                    var question = _model.Questions[i];
+                    
+                    <MudPaper Class="pa-4 mb-4" Elevation="1" Style="background: #fafafa;">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <MudText Typo="Typo.subtitle1" Class="mb-2">Pergunta @(index + 1)</MudText>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                           Color="Color.Error" 
+                                           Size="Size.Small"
+                                           OnClick="@(() => RemoveQuestion(index))" />
+                        </div>
+                        
+                        <MudTextField @bind-Value="question.Text" 
+                                      Label="Texto da pergunta" 
+                                      Variant="Variant.Outlined"
+                                      Required="true"
+                                      Class="mb-4" />
+                        
+                        <MudText Typo="Typo.body2" Class="mb-2">Opções de resposta:</MudText>
+                        
+                        @for (int j = 0; j < question.Options.Count; j++)
+                        {
+                            var optIndex = j;
+                            var option = question.Options[j];
+                            
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <MudTextField @bind-Value="option.Text" 
+                                              Label="@($"Opção {optIndex + 1}")"
+                                              Variant="Variant.Outlined"
+                                              Style="flex: 1;" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Remove" 
+                                               Color="Color.Error"
+                                               Size="Size.Small"
+                                               OnClick="@(() => RemoveOption(index, optIndex))"
+                                               Disabled="@(question.Options.Count <= 2)" />
+                            </div>
+                        }
+                        
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" 
+                                   OnClick="@(() => AddOption(index))"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   Size="Size.Small">
+                            Adicionar Opção
+                        </MudButton>
+                    </MudPaper>
+                }
+                
+                @if (_model.Questions.Count == 0)
+                {
+                    <MudAlert Severity="Severity.Info" Class="mb-4">
+                        Adicione pelo menos uma pergunta para criar a pesquisa
+                    </MudAlert>
+                }
+                
+                <MudDivider Class="my-6" />
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <MudButton Variant="Variant.Outlined" Href="/surveys">Cancelar</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit" 
+                               Variant="Variant.Filled" 
+                               Color="Color.Primary"
+                               Disabled="@(_loading || _model.Questions.Count == 0)">
+                        @if (_loading)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        }
+                        Criar Pesquisa
+                    </MudButton>
+                </div>
+            </EditForm>
+        </MudPaper>
+    </MudContainer>
+</div>
+
+@code {
+    private SurveyFormModel _model = new();
+    private bool _loading;
+
+    protected override void OnInitialized()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        // Initialize with one question
+        AddQuestion();
+    }
+
+    private void AddQuestion()
+    {
+        var question = new QuestionFormModel
+        {
+            Order = _model.Questions.Count + 1,
+            Options = new List<OptionFormModel>
+            {
+                new() { Order = 1 },
+                new() { Order = 2 }
+            }
+        };
+        _model.Questions.Add(question);
+    }
+
+    private void RemoveQuestion(int index)
+    {
+        _model.Questions.RemoveAt(index);
+        // Reorder
+        for (int i = 0; i < _model.Questions.Count; i++)
+        {
+            _model.Questions[i].Order = i + 1;
+        }
+    }
+
+    private void AddOption(int questionIndex)
+    {
+        var question = _model.Questions[questionIndex];
+        question.Options.Add(new OptionFormModel { Order = question.Options.Count + 1 });
+    }
+
+    private void RemoveOption(int questionIndex, int optionIndex)
+    {
+        var question = _model.Questions[questionIndex];
+        question.Options.RemoveAt(optionIndex);
+        // Reorder
+        for (int i = 0; i < question.Options.Count; i++)
+        {
+            question.Options[i].Order = i + 1;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_model.Questions.Count == 0)
+        {
+            Snackbar.Add("Adicione pelo menos uma pergunta", Severity.Warning);
+            return;
+        }
+
+        // Validate on client side just in case
+        foreach (var q in _model.Questions)
+        {
+            if (string.IsNullOrWhiteSpace(q.Text))
+            {
+                Snackbar.Add("Todas as perguntas devem ter um texto", Severity.Warning);
+                return;
+            }
+            if (q.Options.Count < 2 || q.Options.Any(o => string.IsNullOrWhiteSpace(o.Text)))
+            {
+                Snackbar.Add("Todas as perguntas devem ter pelo menos 2 opções preenchidas", Severity.Warning);
+                return;
+            }
+        }
+
+        _loading = true;
+        try
+        {
+            var request = new CreateSurveyRequest
+            {
+                Title = _model.Title,
+                Description = _model.Description,
+                StartDate = _model.StartDate?.ToUniversalTime() ?? DateTime.UtcNow,
+                EndDate = _model.EndDate?.ToUniversalTime() ?? DateTime.UtcNow.AddMonths(1),
+                Questions = _model.Questions.Select(q => new CreateQuestionRequest
+                {
+                    Text = q.Text,
+                    Order = q.Order,
+                    IsRequired = true,
+                    Options = q.Options.Select(o => new CreateOptionRequest
+                    {
+                        Text = o.Text,
+                        Order = o.Order
+                    }).ToList()
+                }).ToList()
+            };
+
+            var result = await SurveyService.CreateAsync(request);
+            Snackbar.Add("Pesquisa criada com sucesso!", Severity.Success);
+            Navigation.NavigateTo("/surveys");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Snackbar.Add(ex.Message.Contains("obrigatório") ? ex.Message : "Erro ao criar pesquisa", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private class SurveyFormModel
+    {
+        [Required(ErrorMessage = "O título é obrigatório")]
+        public string Title { get; set; } = string.Empty;
+
+        public string Description { get; set; } = string.Empty;
+        public DateTime? StartDate { get; set; } = DateTime.Today;
+        public DateTime? EndDate { get; set; } = DateTime.Today.AddMonths(1);
+        public List<QuestionFormModel> Questions { get; set; } = new();
+    }
+
+    private class QuestionFormModel
+    {
+        [Required(ErrorMessage = "O texto da pergunta é obrigatório")]
+        public string Text { get; set; } = string.Empty;
+        
+        public int Order { get; set; }
+        public List<OptionFormModel> Options { get; set; } = new();
+    }
+
+    private class OptionFormModel
+    {
+        [Required(ErrorMessage = "O texto da opção é obrigatório")]
+        public string Text { get; set; } = string.Empty;
+        
+        public int Order { get; set; }
+    }
+}

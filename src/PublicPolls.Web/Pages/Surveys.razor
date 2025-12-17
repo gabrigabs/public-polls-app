@@ -1,0 +1,143 @@
+@page "/surveys"
+@inject ISurveyService SurveyService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<PageTitle>Minhas Pesquisas - PublicPolls</PageTitle>
+
+<div class="page-container">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <MudText Typo="Typo.h4">Minhas Pesquisas</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/surveys/new" StartIcon="@Icons.Material.Filled.Add">
+                Nova Pesquisa
+            </MudButton>
+        </div>
+        
+        @if (_loading)
+        {
+            <div style="text-align: center; padding: 4rem;">
+                <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+            </div>
+        }
+        else if (_surveys.Count == 0)
+        {
+            <MudPaper Class="pa-8" Elevation="1" Style="text-align: center;">
+                <MudIcon Icon="@Icons.Material.Filled.Inbox" Size="Size.Large" Color="Color.Secondary" />
+                <MudText Typo="Typo.h6" Class="mt-4">Nenhuma pesquisa criada</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+                    Crie sua primeira pesquisa para começar a coletar respostas
+                </MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/surveys/new">
+                    Criar Pesquisa
+                </MudButton>
+            </MudPaper>
+        }
+        else
+        {
+            <MudGrid>
+                @foreach (var survey in _surveys)
+                {
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudCard Class="card-hover" Style="height: 100%;">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">@survey.Title</MudText>
+                                    <MudChip Size="Size.Small" 
+                                             Color="@(survey.IsOpen ? Color.Success : Color.Default)"
+                                             Variant="Variant.Outlined">
+                                        @(survey.IsOpen ? "Aberta" : survey.IsActive ? "Agendada" : "Fechada")
+                                    </MudChip>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Small" Class="mr-1" />
+                                    @survey.StartDate.ToString("dd/MM/yyyy") - @survey.EndDate.ToString("dd/MM/yyyy")
+                                </MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">
+                                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" Class="mr-1" />
+                                    @survey.ResponseCount respostas
+                                </MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Primary" Class="mt-2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Link" Size="Size.Small" Class="mr-1" />
+                                    <MudLink Href="@($"/p/{survey.PublicUrl}")" Target="_blank">
+                                        @($"{Navigation.BaseUri}p/{survey.PublicUrl}")
+                                    </MudLink>
+                                </MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" 
+                                           Href="@($"/surveys/{survey.Id}/results")">
+                                    Ver Resultados
+                                </MudButton>
+                                <MudSpacer />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                               Color="Color.Error"
+                                               OnClick="@(() => ConfirmDelete(survey))" />
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    </MudContainer>
+</div>
+
+@code {
+    private List<SurveyListItem> _surveys = new();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadSurveys();
+    }
+
+    private async Task LoadSurveys()
+    {
+        _loading = true;
+        try
+        {
+            _surveys = await SurveyService.GetMySurveysAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Erro ao carregar pesquisas", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task ConfirmDelete(SurveyListItem survey)
+    {
+        var result = await DialogService.ShowMessageBox(
+            "Confirmar exclusão",
+            $"Tem certeza que deseja excluir a pesquisa \"{survey.Title}\"? Esta ação não pode ser desfeita.",
+            yesText: "Excluir", 
+            cancelText: "Cancelar");
+
+        if (result == true)
+        {
+            var deleted = await SurveyService.DeleteAsync(survey.Id);
+            if (deleted)
+            {
+                Snackbar.Add("Pesquisa excluída com sucesso", Severity.Success);
+                await LoadSurveys();
+            }
+            else
+            {
+                Snackbar.Add("Erro ao excluir pesquisa", Severity.Error);
+            }
+        }
+    }
+}

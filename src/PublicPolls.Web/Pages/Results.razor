@@ -1,0 +1,92 @@
+@page "/surveys/{Id:guid}/results"
+@inject ISurveyService SurveyService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Resultados - PublicPolls</PageTitle>
+
+<div class="page-container">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        @if (_loading)
+        {
+            <div style="text-align: center; padding: 4rem;">
+                <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+            </div>
+        }
+        else if (_results == null)
+        {
+            <MudAlert Severity="Severity.Error">Pesquisa não encontrada</MudAlert>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Text" Href="/surveys" StartIcon="@Icons.Material.Filled.ArrowBack" Class="mb-4">
+                Voltar para pesquisas
+            </MudButton>
+            
+            <MudPaper Class="pa-6 mb-6" Elevation="2">
+                <MudText Typo="Typo.h4">@_results.Title</MudText>
+                <MudText Typo="Typo.h6" Color="Color.Primary" Class="mt-2">
+                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Medium" Class="mr-2" />
+                    @_results.TotalResponses respostas coletadas
+                </MudText>
+            </MudPaper>
+            
+            @foreach (var question in _results.Questions)
+            {
+                <MudPaper Class="pa-6 mb-4" Elevation="2">
+                    <MudText Typo="Typo.h6" Class="mb-4">@question.Text</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+                        @question.TotalAnswers respostas
+                    </MudText>
+                    
+                    @foreach (var option in question.Options.OrderByDescending(o => o.Percentage))
+                    {
+                        <div class="mb-3">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <MudText Typo="Typo.body1">@option.Text</MudText>
+                                <MudText Typo="Typo.body1" Style="font-weight: 600;">
+                                    @option.Percentage.ToString("F1")% (@option.Count)
+                                </MudText>
+                            </div>
+                            <div style="background: #e0e0e0; border-radius: 4px; height: 24px; overflow: hidden;">
+                                <div class="percentage-bar" style="width: @(option.Percentage)%;"></div>
+                            </div>
+                        </div>
+                    }
+                </MudPaper>
+            }
+        }
+    </MudContainer>
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private SurveyResults? _results;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadResults();
+    }
+
+    private async Task LoadResults()
+    {
+        _loading = true;
+        try
+        {
+            _results = await SurveyService.GetResultsAsync(Id);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

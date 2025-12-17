@@ -1,0 +1,100 @@
+@page "/login"
+@inject IAuthService AuthService
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Entrar - PublicPolls</PageTitle>
+
+<div class="page-container">
+    <MudContainer MaxWidth="MaxWidth.Small">
+        <MudPaper Class="pa-8" Elevation="2">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h5" Class="mt-2">Entrar</MudText>
+            </div>
+            
+            <EditForm Model="@_model" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+                
+                <MudTextField @bind-Value="_model.Email" 
+                              Label="Email" 
+                              Variant="Variant.Outlined" 
+                              InputType="InputType.Email"
+                              Required="true"
+                              For="@(() => _model.Email)"
+                              Class="mb-4" />
+                
+                <MudTextField @bind-Value="_model.Password" 
+                              Label="Senha" 
+                              Variant="Variant.Outlined" 
+                              InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                              OnAdornmentClick="() => _showPassword = !_showPassword"
+                              Required="true"
+                              For="@(() => _model.Password)"
+                              Class="mb-6" />
+                
+                <MudButton ButtonType="ButtonType.Submit" 
+                           Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           FullWidth="true"
+                           Size="Size.Large"
+                           Disabled="@_loading">
+                    @if (_loading)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    Entrar
+                </MudButton>
+            </EditForm>
+            
+            <MudDivider Class="my-6" />
+            
+            <div style="text-align: center;">
+                <MudText Typo="Typo.body2">
+                    Não tem conta? <MudLink Href="/register">Cadastre-se</MudLink>
+                </MudText>
+            </div>
+        </MudPaper>
+    </MudContainer>
+</div>
+
+@code {
+    private LoginModel _model = new();
+    private bool _loading;
+    private bool _showPassword;
+
+    private async Task HandleLogin()
+    {
+        _loading = true;
+        try
+        {
+            var result = await AuthService.LoginAsync(_model.Email, _model.Password);
+            if (result.Success)
+            {
+                Snackbar.Add("Login realizado com sucesso!", Severity.Success);
+                Navigation.NavigateTo("/surveys");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? "Erro ao fazer login", Severity.Error);
+            }
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private class LoginModel
+    {
+        [Required(ErrorMessage = "O email é obrigatório")]
+        [EmailAddress(ErrorMessage = "O email deve ser válido")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A senha é obrigatória")]
+        public string Password { get; set; } = string.Empty;
+    }
+}

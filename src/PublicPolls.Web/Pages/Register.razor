@@ -1,0 +1,112 @@
+@page "/register"
+@inject IAuthService AuthService
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Cadastrar - PublicPolls</PageTitle>
+
+<div class="page-container">
+    <MudContainer MaxWidth="MaxWidth.Small">
+        <MudPaper Class="pa-8" Elevation="2">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h5" Class="mt-2">Criar Conta</MudText>
+            </div>
+            
+            <EditForm Model="@_model" OnValidSubmit="HandleRegister">
+                <DataAnnotationsValidator />
+                
+                <MudTextField @bind-Value="_model.Name" 
+                              Label="Nome" 
+                              Variant="Variant.Outlined"
+                              Required="true"
+                              For="@(() => _model.Name)"
+                              Class="mb-4" />
+                
+                <MudTextField @bind-Value="_model.Email" 
+                              Label="Email" 
+                              Variant="Variant.Outlined" 
+                              InputType="InputType.Email"
+                              Required="true"
+                              For="@(() => _model.Email)"
+                              Class="mb-4" />
+                
+                <MudTextField @bind-Value="_model.Password" 
+                              Label="Senha" 
+                              Variant="Variant.Outlined" 
+                              InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                              OnAdornmentClick="() => _showPassword = !_showPassword"
+                              Required="true"
+                              For="@(() => _model.Password)"
+                              Class="mb-6" />
+                
+                <MudButton ButtonType="ButtonType.Submit" 
+                           Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           FullWidth="true"
+                           Size="Size.Large"
+                           Disabled="@_loading">
+                    @if (_loading)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    Criar Conta
+                </MudButton>
+            </EditForm>
+            
+            <MudDivider Class="my-6" />
+            
+            <div style="text-align: center;">
+                <MudText Typo="Typo.body2">
+                    Já tem conta? <MudLink Href="/login">Entrar</MudLink>
+                </MudText>
+            </div>
+        </MudPaper>
+    </MudContainer>
+</div>
+
+@code {
+    private RegisterModel _model = new();
+    private bool _loading;
+    private bool _showPassword;
+
+    private async Task HandleRegister()
+    {
+        _loading = true;
+        try
+        {
+            var result = await AuthService.RegisterAsync(_model.Email, _model.Password, _model.Name);
+            if (result.Success)
+            {
+                Snackbar.Add("Conta criada com sucesso!", Severity.Success);
+                Navigation.NavigateTo("/surveys");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? "Erro ao criar conta", Severity.Error);
+            }
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private class RegisterModel
+    {
+        [Required(ErrorMessage = "O nome é obrigatório")]
+        [MinLength(3, ErrorMessage = "O nome deve ter no mínimo 3 caracteres")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "O email é obrigatório")]
+        [EmailAddress(ErrorMessage = "O email deve ser válido")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A senha é obrigatória")]
+        [MinLength(6, ErrorMessage = "A senha deve ter no mínimo 6 caracteres")]
+        public string Password { get; set; } = string.Empty;
+    }
+}

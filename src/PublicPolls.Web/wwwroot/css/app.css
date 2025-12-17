@@ -1,0 +1,109 @@
+:root {
+    --primary-color: #1976D2;
+    --primary-dark: #1565C0;
+    --secondary-color: #424242;
+    --background-color: #f5f5f5;
+    --surface-color: #ffffff;
+    --error-color: #d32f2f;
+    --success-color: #388e3c;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background-color: var(--background-color);
+    color: #212121;
+    line-height: 1.6;
+}
+
+#app {
+    min-height: 100vh;
+}
+
+#blazor-error-ui {
+    display: none;
+    background: var(--error-color);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+}
+
+#blazor-error-ui .reload {
+    color: white;
+    margin-left: 1rem;
+}
+
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.survey-status-active {
+    color: var(--success-color);
+}
+
+.survey-status-inactive {
+    color: var(--secondary-color);
+}
+
+.survey-status-closed {
+    color: var(--error-color);
+}
+
+.results-chart {
+    height: 300px;
+}
+
+.question-card {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: var(--surface-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.option-item {
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option-item:hover {
+    border-color: var(--primary-color);
+    background: #e3f2fd;
+}
+
+.option-item.selected {
+    border-color: var(--primary-color);
+    background: #bbdefb;
+}
+
+.percentage-bar {
+    height: 24px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    transition: width 0.5s ease;
+}

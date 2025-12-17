@@ -1,0 +1,164 @@
+@page "/p/{PublicUrl}"
+@inject ISurveyService SurveyService
+@inject ISnackbar Snackbar
+
+<PageTitle>Responder Pesquisa - PublicPolls</PageTitle>
+
+<div class="page-container">
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        @if (_loading)
+        {
+            <div style="text-align: center; padding: 4rem;">
+                <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+            </div>
+        }
+        else if (_submitted)
+        {
+            <MudPaper Class="pa-8" Elevation="2" Style="text-align: center;">
+                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" Color="Color.Success" Style="font-size: 5rem;" />
+                <MudText Typo="Typo.h4" Class="mt-4 mb-2">Obrigado!</MudText>
+                <MudText Typo="Typo.h6" Color="Color.Secondary">
+                    Sua resposta foi registrada com sucesso.
+                </MudText>
+            </MudPaper>
+        }
+        else if (_survey == null)
+        {
+            <MudPaper Class="pa-8" Elevation="2" Style="text-align: center;">
+                <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Warning" Style="font-size: 5rem;" />
+                <MudText Typo="Typo.h5" Class="mt-4 mb-2">Pesquisa não encontrada</MudText>
+                <MudText Typo="Typo.body1" Color="Color.Secondary">
+                    A pesquisa pode ter sido encerrada ou o link está incorreto.
+                </MudText>
+            </MudPaper>
+        }
+        else
+        {
+            <MudPaper Class="pa-6 mb-6" Elevation="2">
+                <MudText Typo="Typo.h4">@_survey.Title</MudText>
+                @if (!string.IsNullOrEmpty(_survey.Description))
+                {
+                    <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mt-2">
+                        @_survey.Description
+                    </MudText>
+                }
+            </MudPaper>
+            
+            @foreach (var question in _survey.Questions.OrderBy(q => q.Order))
+            {
+                <div class="question-card">
+                    <MudText Typo="Typo.h6" Class="mb-4">
+                        @question.Text
+                        @if (question.IsRequired)
+                        {
+                            <span style="color: #d32f2f;">*</span>
+                        }
+                    </MudText>
+                    
+                    @foreach (var option in question.Options.OrderBy(o => o.Order))
+                    {
+                        var questionId = question.Id;
+                        var optionId = option.Id;
+                        var isSelected = _answers.ContainsKey(questionId) && _answers[questionId] == optionId;
+                        
+                        <div class="option-item @(isSelected ? "selected" : "")"
+                             @onclick="@(() => SelectOption(questionId, optionId))">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <MudIcon Icon="@(isSelected ? Icons.Material.Filled.RadioButtonChecked : Icons.Material.Filled.RadioButtonUnchecked)" 
+                                         Color="@(isSelected ? Color.Primary : Color.Default)" />
+                                <MudText>@option.Text</MudText>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       Size="Size.Large"
+                       FullWidth="true"
+                       OnClick="SubmitResponse"
+                       Disabled="@_submitting">
+                @if (_submitting)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                Enviar Respostas
+            </MudButton>
+        }
+    </MudContainer>
+</div>
+
+@code {
+    [Parameter]
+    public string PublicUrl { get; set; } = string.Empty;
+
+    private SurveyDetail? _survey;
+    private Dictionary<Guid, Guid> _answers = new();
+    private bool _loading = true;
+    private bool _submitting;
+    private bool _submitted;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSurvey();
+    }
+
+    private async Task LoadSurvey()
+    {
+        _loading = true;
+        try
+        {
+            _survey = await SurveyService.GetPublicAsync(PublicUrl);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void SelectOption(Guid questionId, Guid optionId)
+    {
+        _answers[questionId] = optionId;
+    }
+
+    private async Task SubmitResponse()
+    {
+        if (_survey == null) return;
+
+        // Validate required questions
+        var requiredQuestions = _survey.Questions.Where(q => q.IsRequired).Select(q => q.Id);
+        var missingAnswers = requiredQuestions.Except(_answers.Keys).ToList();
+        
+        if (missingAnswers.Any())
+        {
+            Snackbar.Add("Por favor, responda todas as perguntas obrigatórias", Severity.Warning);
+            return;
+        }
+
+        _submitting = true;
+        try
+        {
+            var answers = _answers.Select(a => new AnswerRequest
+            {
+                QuestionId = a.Key,
+                OptionId = a.Value
+            }).ToList();
+
+            var result = await SurveyService.SubmitResponseAsync(_survey.Id, answers);
+            
+            if (result.Success)
+            {
+                _submitted = true;
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? "Erro ao enviar resposta", Severity.Error);
+            }
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+}

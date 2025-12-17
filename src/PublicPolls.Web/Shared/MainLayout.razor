@@ -1,0 +1,51 @@
+@inherits LayoutComponentBase
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudText Typo="Typo.h6" Class="ml-3">PublicPolls</MudText>
+        <MudSpacer />
+        @if (AuthService.IsAuthenticated)
+        {
+            <MudText Typo="Typo.body2" Class="mr-4">@AuthService.CurrentUser?.Name</MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" OnClick="Logout" Title="Sair" />
+        }
+    </MudAppBar>
+    
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always">
+        <MudNavMenu>
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Início</MudNavLink>
+            @if (AuthService.IsAuthenticated)
+            {
+                <MudNavLink Href="/surveys" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Poll">Minhas Pesquisas</MudNavLink>
+                <MudNavLink Href="/surveys/new" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Add">Nova Pesquisa</MudNavLink>
+            }
+            else
+            {
+                <MudNavLink Href="/login" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Login">Entrar</MudNavLink>
+                <MudNavLink Href="/register" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.PersonAdd">Cadastrar</MudNavLink>
+            }
+        </MudNavMenu>
+    </MudDrawer>
+    
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void Logout()
+    {
+        AuthService.Logout();
+        Navigation.NavigateTo("/login");
+    }
+}

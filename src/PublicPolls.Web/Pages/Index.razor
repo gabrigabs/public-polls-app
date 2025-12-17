@@ -1,0 +1,58 @@
+@page "/"
+
+<PageTitle>PublicPolls - Sistema de Questionários Online</PageTitle>
+
+<div class="page-container">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <div style="text-align: center; padding: 4rem 0;">
+            <MudIcon Icon="@Icons.Material.Filled.Poll" Size="Size.Large" Color="Color.Primary" Style="font-size: 5rem;" />
+            <MudText Typo="Typo.h3" Class="my-4" Style="font-weight: 600;">
+                Sistema de Questionários Online
+            </MudText>
+            <MudText Typo="Typo.h6" Color="Color.Secondary" Class="mb-6">
+                Crie pesquisas públicas e colete respostas de milhões de pessoas
+            </MudText>
+            
+            <MudGrid Justify="Justify.Center" Class="mt-8">
+                <MudItem xs="12" sm="4">
+                    <MudPaper Class="pa-6 card-hover" Elevation="2" Style="height: 100%;">
+                        <MudIcon Icon="@Icons.Material.Filled.Create" Color="Color.Primary" Size="Size.Large" />
+                        <MudText Typo="Typo.h6" Class="mt-4 mb-2">Criar Pesquisas</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            Crie questionários com perguntas de múltipla escolha de forma simples e rápida.
+                        </MudText>
+                    </MudPaper>
+                </MudItem>
+                
+                <MudItem xs="12" sm="4">
+                    <MudPaper Class="pa-6 card-hover" Elevation="2" Style="height: 100%;">
+                        <MudIcon Icon="@Icons.Material.Filled.Share" Color="Color.Primary" Size="Size.Large" />
+                        <MudText Typo="Typo.h6" Class="mt-4 mb-2">Compartilhar</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            Distribua links únicos nas redes sociais para coletar respostas.
+                        </MudText>
+                    </MudPaper>
+                </MudItem>
+                
+                <MudItem xs="12" sm="4">
+                    <MudPaper Class="pa-6 card-hover" Elevation="2" Style="height: 100%;">
+                        <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Primary" Size="Size.Large" />
+                        <MudText Typo="Typo.h6" Class="mt-4 mb-2">Resultados</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            Visualize resultados sumarizados com gráficos e porcentagens em tempo real.
+                        </MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+            
+            <div class="mt-8">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Href="/register" Class="mx-2">
+                    Começar Agora
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" Href="/login" Class="mx-2">
+                    Já tenho conta
+                </MudButton>
+            </div>
+        </div>
+    </MudContainer>
+</div>
