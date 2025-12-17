@@ -284,7 +284,7 @@ graph LR
 ## 5. Monitoramento (Recomendado)
 
 ### 5.1 Métricas Importantes
-
+```mermaid
 graph TB
     root("📊 Métricas")
 
@@ -336,7 +336,7 @@ graph TB
     class D1,D2,D3 avail;
     class R1,R2,R3,R4 res;
     class N1,N2,N3 biz;
-
+```
 ### 5.2 Stack Recomendada
 
 | Componente | Ferramenta | Propósito |
