@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: publicpolls-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: publicpolls
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - publicpolls-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: publicpolls-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - publicpolls-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: publicpolls-api
+    ports:
+      - "5001:80"
+      - "5443:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=publicpolls;Username=postgres;Password=postgres
+      - ConnectionStrings__Redis=redis:6379
+      - Jwt__Key=super-secret-key-with-minimum-32-characters-for-hmac-sha256!
+      - Jwt__Issuer=PublicPolls
+      - Jwt__Audience=PublicPolls
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - publicpolls-network
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: publicpolls-web
+    ports:
+      - "5002:80"
+    depends_on:
+      - api
+    networks:
+      - publicpolls-network
+    restart: unless-stopped
+
+networks:
+  publicpolls-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
