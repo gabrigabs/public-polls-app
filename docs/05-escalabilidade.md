@@ -150,6 +150,15 @@ graph LR
     end
 
     JWT --> API --> NO
+
+    %% Styling
+    classDef jwt fill:#e1bee7,stroke:#6a1b9a,color:#000,stroke-width:2px;
+    classDef api fill:#bbdefb,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef no fill:#ffcdd2,stroke:#c62828,color:#000,stroke-width:2px;
+
+    class JWT jwt;
+    class API api;
+    class NO no;
 ```
 
 **Por que stateless?**
@@ -182,6 +191,13 @@ graph TB
     Q2 --> I2
     Q3 --> I3
     Q4 --> I4
+
+    %% Styling
+    classDef query fill:#bbdefb,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef idx fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+
+    class Q1,Q2,Q3,Q4 query;
+    class I1,I2,I3,I4 idx;
 ```
 
 ---
@@ -233,6 +249,10 @@ graph TB
 
     P1 -->|"100K respostas/dia"| P2
     P2 -->|"1M respostas/dia"| P3
+
+    %% Styling
+    classDef phase fill:#bbdefb,stroke:#0d47a1,color:#000,stroke-width:2px;
+    class P1,P2,P3 phase;
 ```
 
 ### 4.2 Mensageria Assíncrona

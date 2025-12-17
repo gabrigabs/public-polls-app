@@ -397,35 +397,90 @@ sequenceDiagram
 ## 🔧 Stack Tecnológico
 
 ```mermaid
-mindmap
-  root((PublicPolls))
-    Backend
-      ASP.NET Core 8
-        Controllers REST
-        JWT Authentication
-        Swagger/OpenAPI
-      Entity Framework Core
-        PostgreSQL Provider
-        Migrations
-      Redis
-        Caching
-        Rate Limiting
-    Frontend
-      Blazor WebAssembly
-        C# no Browser
-        SPA
-      MudBlazor
-        Material Design
-        Componentes Prontos
-    Infrastructure
-      Docker
-        Compose
-        Multi-stage Builds
-      PostgreSQL 15
-        ACID
-        JSON Support
-      Redis 7
-        In-Memory Cache
+graph TB
+    root("🚀 PublicPolls")
+    
+    subgraph "⚙️ Backend"
+        BE_CORE["ASP.NET Core 8"]
+        BE_FEAT1["Controllers REST"]
+        BE_FEAT2["JWT Authentication"]
+        BE_FEAT3["Swagger/OpenAPI"]
+        
+        BE_DATA["Entity Framework Core"]
+        BE_DB["PostgreSQL Provider"]
+        BE_MIG["Migrations"]
+        
+        BE_CACHE["Redis"]
+        BE_C1["Caching"]
+        BE_C2["Rate Limiting"]
+    end
+    
+    subgraph "🖥️ Frontend"
+        FE_CORE["Blazor WebAssembly"]
+        FE_F1["C# no Browser"]
+        FE_F2["SPA"]
+        
+        FE_UI["MudBlazor"]
+        FE_U1["Material Design"]
+        FE_U2["Componentes Prontos"]
+    end
+    
+    subgraph "🏗️ Infrastructure"
+        INF_DOCKER["Docker"]
+        INF_D1["Compose"]
+        INF_D2["Multi-stage Builds"]
+        
+        INF_PG["PostgreSQL 15"]
+        INF_P1["ACID"]
+        INF_P2["JSON Support"]
+        
+        INF_RD["Redis 7"]
+        INF_R1["In-Memory Cache"]
+    end
+
+    root --> BE_CORE
+    root --> FE_CORE
+    root --> INF_DOCKER
+
+    BE_CORE --> BE_FEAT1
+    BE_CORE --> BE_FEAT2
+    BE_CORE --> BE_FEAT3
+    BE_CORE --> BE_DATA
+    BE_CORE --> BE_CACHE
+    
+    BE_DATA --> BE_DB
+    BE_DATA --> BE_MIG
+    
+    BE_CACHE --> BE_C1
+    BE_CACHE --> BE_C2
+
+    FE_CORE --> FE_F1
+    FE_CORE --> FE_F2
+    FE_CORE --> FE_UI
+    
+    FE_UI --> FE_U1
+    FE_UI --> FE_U2
+
+    INF_DOCKER --> INF_D1
+    INF_DOCKER --> INF_D2
+    INF_DOCKER --> INF_PG
+    INF_DOCKER --> INF_RD
+    
+    INF_PG --> INF_P1
+    INF_PG --> INF_P2
+    
+    INF_RD --> INF_R1
+
+    %% Styling
+    classDef root fill:#212121,stroke:#000,color:#fff,stroke-width:2px;
+    classDef backend fill:#e3f2fd,stroke:#1565c0,color:#000,stroke-width:2px;
+    classDef frontend fill:#f3e5f5,stroke:#7b1fa2,color:#000,stroke-width:2px;
+    classDef infra fill:#e8f5e9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    
+    class root root;
+    class BE_CORE,BE_FEAT1,BE_FEAT2,BE_FEAT3,BE_DATA,BE_DB,BE_MIG,BE_CACHE,BE_C1,BE_C2 backend;
+    class FE_CORE,FE_F1,FE_F2,FE_UI,FE_U1,FE_U2 frontend;
+    class INF_DOCKER,INF_D1,INF_D2,INF_PG,INF_P1,INF_P2,INF_RD,INF_R1 infra;
 ```
 
 ---

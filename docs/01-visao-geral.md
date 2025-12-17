@@ -46,26 +46,55 @@ graph LR
 
 ### 2.2 Objetivos Técnicos
 
-```mermaid
-mindmap
-  root((Objetivos<br/>Técnicos))
-    Performance
-      Response time < 200ms
-      Throughput > 10k req/s
-      Cache hit ratio > 80%
-    Disponibilidade
-      Uptime 99.9%
-      Zero downtime deploy
-      Failover automático
-    Manutenibilidade
-      Clean Architecture
-      Testes automatizados
-      Documentação completa
-    Segurança
-      JWT Authentication
-      Rate Limiting
-      Input Validation
-```
+```graph TB
+    root("🎯 Objetivos Técnicos")
+    
+    subgraph "🚀 Performance"
+        P1["Response time < 200ms"]
+        P2["Throughput > 10k req/s"]
+        P3["Cache hit ratio > 80%"]
+    end
+    
+    subgraph "🆙 Disponibilidade"
+        D1["Uptime 99.9%"]
+        D2["Zero downtime deploy"]
+        D3["Failover automático"]
+    end
+    
+    subgraph "🛠️ Manutenibilidade"
+        M1["Clean Architecture"]
+        M2["Testes automatizados"]
+        M3["Documentação completa"]
+    end
+    
+    subgraph "🔐 Segurança"
+        S1["JWT Authentication"]
+        S2["Rate Limiting"]
+        S3["Input Validation"]
+    end
+
+    root --> P1
+    root --> D1
+    root --> M1
+    root --> S1
+    
+    P1 ~~~ P2 ~~~ P3
+    D1 ~~~ D2 ~~~ D3
+    M1 ~~~ M2 ~~~ M3
+    S1 ~~~ S2 ~~~ S3
+
+    %% Styling
+    classDef root fill:#212121,stroke:#000,color:#fff,stroke-width:2px;
+    classDef perf fill:#e3f2fd,stroke:#1565c0,color:#000,stroke-width:2px;
+    classDef avail fill:#e8f5e9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef maint fill:#fff9c4,stroke:#fbc02d,color:#000,stroke-width:2px;
+    classDef sec fill:#ffcdd2,stroke:#c62828,color:#000,stroke-width:2px;
+
+    class root root;
+    class P1,P2,P3 perf;
+    class D1,D2,D3 avail;
+    class M1,M2,M3 maint;
+    class S1,S2,S3 sec;
 
 ---
 
@@ -106,6 +135,19 @@ graph TB
         RF16[RF16: Exibir contagem por opção]
         RF17[RF17: Dashboard sumarizado]
     end
+
+    %% Styling
+    classDef auth fill:#e1bee7,stroke:#6a1b9a,color:#000,stroke-width:2px;
+    classDef surv fill:#bbdefb,stroke:#0d47a1,color:#000,stroke-width:2px;
+    classDef quest fill:#c8e6c9,stroke:#2e7d32,color:#000,stroke-width:2px;
+    classDef resp fill:#ffe0b2,stroke:#ef6c00,color:#000,stroke-width:2px;
+    classDef resu fill:#fff9c4,stroke:#fbc02d,color:#000,stroke-width:2px;
+
+    class RF01,RF02,RF03 auth;
+    class RF04,RF05,RF06,RF07 surv;
+    class RF08,RF09,RF10 quest;
+    class RF11,RF12,RF13,RF14 resp;
+    class RF15,RF16,RF17 resu;
 ```
 
 ### 3.2 Requisitos Não-Funcionais
@@ -176,24 +218,19 @@ graph TB
 ### 5.2 Restrições de Negócio
 
 ```mermaid
-timeline
-    title Cronograma do Projeto
-    
-    Semana 1 : Setup Projeto
-             : Domain Layer
-             : Infrastructure Layer
-    
-    Semana 2 : Application Services
-             : API Controllers
-             : Swagger Documentation
-    
-    Semana 3 : Frontend Blazor
-             : Páginas de Resposta
-             : Dashboard Admin
-    
-    Semana 4 : Testes
-             : Documentação
-             : Deploy
+graph LR
+    subgraph "📅 Cronograma do Projeto"
+        W1["Semana 1<br/>Setup + Domain + Infra"]
+        W2["Semana 2<br/>App Services + API + Swagger"]
+        W3["Semana 3<br/>Frontend Blazor + Pages"]
+        W4["Semana 4<br/>Testes + Docs + Deploy"]
+    end
+
+    W1 --> W2 --> W3 --> W4
+
+    %% Styling
+    classDef time fill:#e3f2fd,stroke:#1565c0,color:#000,stroke-width:2px;
+    class W1,W2,W3,W4 time;
 ```
 
 ---
